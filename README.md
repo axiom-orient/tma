@@ -50,12 +50,20 @@ let tuist = Tuist(
 ### 2. 모듈 생성 명령어
 명령어 한 줄로 아키텍처 가이드라인에 맞는 모듈을 즉시 스캐폴딩할 수 있습니다.
 
-| 템플릿 | 용도 | 명령어 예시 |
-| :--- | :--- | :--- |
-| **Feature** | UI 스크린 및 비즈니스 로직 | `tuist scaffold feature --name Home` |
-| **Domain** | 순수 비즈니스 로직 및 모델 | `tuist scaffold domain --name User` |
-| **Service** | 앱 외부 시스템 경계 (API 등) | `tuist scaffold service --name Auth` |
-| **Shared** | 공용 유틸리티, 디자인 시스템 | `tuist scaffold shared --name UIComponents` |
+| 템플릿 | 용도 | 명령어 예시 | 생성 경로 |
+| :--- | :--- | :--- | :--- |
+| **Feature** | UI 스크린 및 비즈니스 로직 | `tuist scaffold feature --name Home` | `Projects/Features/Home/` |
+| **Domain** | 순수 비즈니스 로직 및 모델 | `tuist scaffold domain --name User` | `Projects/Domains/User/` |
+| **Service** | 앱 외부 시스템 경계 (API 등) | `tuist scaffold service --name Auth` | `Projects/Services/Auth/` |
+| **Shared** | 공용 유틸리티, 디자인 시스템 | `tuist scaffold shared --name UIComponents` | `Projects/Shared/UIComponents/` |
+
+### 3. 모듈 네이밍 규칙
+생성되는 모듈명은 다음 규칙을 따릅니다:
+
+- **Domain**: `{{ name }}Domain` (예: `UserDomain`)
+- **Feature**: `{{ name }}Feature` (예: `HomeFeature`)
+- **Service**: `{{ name }}Service` (예: `AuthService`)
+- **Shared**: `{{ name }}` 그대로 (예: `UIComponents`)
 
 ---
 
@@ -63,15 +71,18 @@ let tuist = Tuist(
 
 ### 1. 모듈별 타겟 상세
 
-| 모듈 유형 | 타겟 구성 | 종속성 규칙 |
-| :--- | :--- | :--- |
-| **Feature** | Feature, Tests | Domain, Service, Shared |
-| **Domain** | Interface, Sources | Foundation, Dependencies |
-| **Service** | Interface, Sources, Tests | Interface, Shared |
-| **Shared** | Sources (Internal organization) | Foundation |
+| 모듈 유형 | 타겟 구성 | Product 타입 | 종속성 규칙 |
+| :--- | :--- | :--- | :--- |
+| **Feature** | Feature, Tests (2-target) | `.staticFramework`, `.unitTests` | Can import: Domain/Service Interfaces, Shared |
+| **Domain** | Interface, Sources (2-target) | `.staticFramework`, `.staticFramework` | Dependencies (Interface only) |
+| **Service** | Interface, Sources, Tests (3-target) | `.staticFramework`, `.staticFramework`, `.unitTests` | Can import: Domain/Service Interfaces, Shared |
+| **Shared** | Single target (Internal organization) | `.framework` | Dependencies (for DI support) |
 
 > [!TIP]
 > **권장 Import 패턴**: 가능한 한 `Interface`만 import 하세요 (예: `import UserDomainInterface`). 구체적인 구현체(`Sources`)는 App 타겟에서만 링크됩니다.
+
+> [!NOTE]
+> **Shared 모듈의 Product 타입**: Shared 모듈은 `.framework` (동적)를 사용하여 중복 심볼 문제를 방지합니다. Domain/Feature/Service는 `.staticFramework`를 사용합니다.
 
 ### 2. 의존성 규칙 (Dependency Rules)
 
@@ -155,8 +166,10 @@ Text("Hello").foregroundStyle(theme.token(for: .textPrimary).swiftUIColor)
 ### 1. Xcode 16 `buildableFolders` 활용
 Tuist 4.62.0부터 지원되는 파일 시스템 동기화 기능을 적극 활용합니다. 파일 추가/삭제 시 `tuist generate`를 매번 실행할 필요가 없어 AI 도우미와의 협업에 최적화되어 있습니다.
 
-### 2. TCA Linking 일관성
-기본적으로 모든 모듈을 `.staticFramework`로 유지하세요. 중복 심볼 오류가 발생할 경우에만 예외적으로 전체 모듈을 `.framework`로 전환하는 것을 검토합니다.
+### 2. Product 타입 전략
+- **Domain/Feature/Service**: `.staticFramework`를 사용합니다 (빌드 최적화).
+- **Shared**: `.framework` (동적)를 사용하여 중복 심볼 문제를 방지합니다.
+- 중복 심볼 오류가 발생할 경우에만 예외적으로 특정 모듈을 `.framework`로 전환하는 것을 검토합니다.
 
 ### 3. CI/CD 및 보안
 - GitHub Actions 사용 시 `TUIST_TOKEN` 노출 대신 **OIDC 인증**을 연동하세요.
