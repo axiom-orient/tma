@@ -1,4 +1,4 @@
-# TmaTemplates – Tuist Modular Architecture Plugin
+# Tma – Tuist Modular Architecture Plugin
 
 TMA는 **The Composable Architecture (TCA)**를 사용하는 iOS 프로젝트를 위한 전문 Tuist 플러그인입니다. `tuist scaffold` 한 번으로 Feature, Service, Domain, Shared 모듈을 동일한 규칙과 테스트 기반으로 생성하며, 현대적인 iOS 개발 워크플로우에 최적화된 구조를 제공합니다.
 
