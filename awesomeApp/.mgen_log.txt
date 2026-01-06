@@ -1,0 +1,38 @@
+
+## Step 1 - Validate inputs
+
+## Step 2 - Create project directory
+[CMD] mkdir -p /Users/axient/repository//awesomeAppi 
+[INFO] Project dir: /Users/axient/repository//awesomeAppi
+
+## Step 3 - Ensure tuist is installed
+[INFO] tuist found in PATH
+
+## Step 4 - Ensure Tuist/Package files
+[CMD] mkdir -p /Users/axient/repository//awesomeAppi/Tuist 
+[INFO] Writing Tuist.swift
+[INFO] Writing Tuist/Package.swift
+[INFO] Writing .tuist-version
+
+## Step 5 - Ensure Workspace.swift
+[INFO] Creating Workspace.swift
+
+## Step 6 - Install dependencies
+[INFO] Skip tuist install
+
+## Step 7 - Run tuist scaffold
+[INFO] Running tuist scaffold app
+[CMD] tuist scaffold app --name awesomeApp --bundle-id-prefix com.axiomorient --organization-name axient --deployment-target 17.0 --team-id 7WR76382QB 
+
+
+✔ Success 
+  Template app was successfully generated 
+
+## Step 8 - Generate Xcode project
+[INFO] Skip tuist generate
+
+## Step 9 - Build verification
+[INFO] Skip tuist build
+
+[INFO] Done
+[INFO] Project path: /Users/axient/repository//awesomeAppi
