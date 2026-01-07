@@ -49,7 +49,7 @@ let project = Project(
         .target(
             name: "\(moduleName)Sources",
             destinations: .iOS,
-            product: .staticFramework,
+            product: .framework,
             bundleId: "\(bundleIdPrefix).\(moduleName.lowercased()).sources",
             deploymentTargets: deploymentTarget,
             buildableFolders: ["Sources"],
