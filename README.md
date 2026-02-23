@@ -1,4 +1,4 @@
-# apptma
+# tuist modualer architecture
 
 Tuist(iOS)에서 **App / Feature / Domain / Service / Shared 모듈을 일관된 규칙으로 scaffold**하기 위한 플러그인입니다.  
 이 저장소는 템플릿 정의, 검증 스크립트, 운영 문서를 함께 관리합니다.
