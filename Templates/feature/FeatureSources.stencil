@@ -1,10 +1,6 @@
-import SwiftUI
-import Foundation
 import ComposableArchitecture
 import Dependencies
-import OSLog
 import {{ name }}FeatureInterface
-import {{ name }}FeatureInterfaceKeys
 // TODO: Import Domain/Service dependencies (Interface only)
 // Examples:
 // import ProductDomainInterface
@@ -98,12 +94,6 @@ public struct {{ name }}Feature {
 
             case .internal:
                 // TODO: Handle internal actions
-                // Example:
-                // case let .dataLoaded(items):
-                //     state.data = items
-                //     state.isLoading = false
-                //     return .none
-
                 return .none
 
             case .delegate:
@@ -111,11 +101,5 @@ public struct {{ name }}Feature {
                 return .none
             }
         }
-
-        // TODO: Compose child feature reducers if needed
-        // Example:
-        // Scope(state: \.child, action: \.internal.child) {
-        //     ChildFeature()
-        // }
     }
 }

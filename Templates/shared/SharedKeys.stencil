@@ -1,0 +1,9 @@
+import Foundation
+
+/// Shared app-storage keys used by features via @Shared(.appStorage(...)).
+///
+/// Example:
+/// @Shared(.appStorage({{ name }}Keys.sampleFlag)) var flag = false
+public enum {{ name }}Keys {
+    public static let sampleFlag = "{{ bundleIdPrefix }}.{{ name | lowercase }}.sampleFlag"
+}
