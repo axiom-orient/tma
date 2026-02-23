@@ -1,0 +1,22 @@
+# macOS
+.DS_Store
+
+# Editor / local temp
+*.swp
+*.swo
+
+# Xcode local user data
+*.xcuserstate
+*.xcworkspace/xcuserdata/
+*.xcodeproj/xcuserdata/
+
+# Tuist / SwiftPM generated artifacts
+.tuist/
+.build/
+Tuist/.build/
+Tuist/Cache/
+DerivedData/
+
+# Local validation artifacts
+.renewal_validate_*/
+apptma-sample-project/

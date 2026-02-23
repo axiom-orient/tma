@@ -1,0 +1,11 @@
+[tools]
+tuist = "4.52.0"
+
+[tasks.bootstrap]
+run = ["mise install", "tuist install", "tuist generate"]
+
+[tasks.test]
+run = "tuist test"
+
+[tasks.cache-warm]
+run = "tuist cache"

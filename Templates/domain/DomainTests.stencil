@@ -1,0 +1,59 @@
+import XCTest
+@testable import {{ name }}DomainSources
+@testable import {{ name }}DomainInterface
+
+final class {{ name }}UseCaseTests: XCTestCase {
+    func test_createAndFetchRoundTrip() async throws {
+        let useCase = Default{{ name }}UseCase()
+        let entity = {{ name }}Entity(name: "Sample")
+
+        let created = try await useCase.create(entity)
+        XCTAssertEqual(created.name, entity.name)
+
+        let fetched = try await useCase.detail(for: created.id)
+        XCTAssertEqual(fetched, created)
+
+        let all = try await useCase.listEntities()
+        XCTAssertEqual(all, [created])
+    }
+
+    func test_updateRequiresExistingEntity() async throws {
+        let useCase = Default{{ name }}UseCase()
+        let entity = {{ name }}Entity(name: "Missing")
+
+        await XCTAssertThrowsErrorAsync(try await useCase.update(entity)) { error in
+            guard
+                let domainError = error as? {{ name }}DomainError,
+                case .notFound = domainError
+            else {
+                XCTFail("Expected notFound error but received \(String(reflecting: error))")
+                return
+            }
+        }
+    }
+
+    func test_createRejectsBlankName() async throws {
+        let useCase = Default{{ name }}UseCase()
+        let entity = {{ name }}Entity(name: "   ")
+
+        await XCTAssertThrowsErrorAsync(try await useCase.create(entity)) { error in
+            guard
+                let domainError = error as? {{ name }}DomainError,
+                case let .validationFailed(reason) = domainError
+            else {
+                XCTFail("Expected validationFailed error but received \(String(reflecting: error))")
+                return
+            }
+            XCTAssertEqual(reason, "Name must not be empty")
+        }
+    }
+}
+
+private func XCTAssertThrowsErrorAsync<T>(_ expression: @autoclosure () async throws -> T, _ message: @autoclosure () -> String = "", file: StaticString = #filePath, line: UInt = #line, _ errorHandler: (Error) -> Void) async {
+    do {
+        _ = try await expression()
+        XCTFail(message(), file: file, line: line)
+    } catch {
+        errorHandler(error)
+    }
+}

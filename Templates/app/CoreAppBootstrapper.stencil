@@ -1,0 +1,13 @@
+import Foundation
+import OSLog
+
+@MainActor
+public enum AppBootstrap {
+    private static let logger = Logger(subsystem: "{{ bundleIdPrefix }}.{{ name | lowerFirstWord }}", category: "Bootstrap")
+
+    /// Keep startup side effects explicit in one place.
+    public static func bootstrap() {
+        logger.debug("App bootstrap started")
+        // SDK initialization can be added here.
+    }
+}

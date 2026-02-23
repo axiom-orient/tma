@@ -1,0 +1,89 @@
+import XCTest
+import Foundation
+@testable import {{ name }}ServiceSources
+@testable import {{ name }}ServiceInterface
+
+final class {{ name }}ServiceTests: XCTestCase {
+    func test_storeAndFetchRoundTrip() async throws {
+        let now = LockedValue(Date(timeIntervalSince1970: 0))
+        let service = Live{{ name }}Service(clock: { now.value }, timeToLive: 60)
+        let payload = Data("payload".utf8)
+        let response = {{ name }}Response(identifier: "id", payload: payload)
+
+        try await service.store(response)
+        let fetched = try await service.fetch({{ name }}Request(identifier: "id"))
+
+        XCTAssertEqual(fetched.identifier, response.identifier)
+        XCTAssertEqual(fetched.payload, payload)
+    }
+
+    func test_fetchAfterTTLExpiresThrows() async throws {
+        let now = LockedValue(Date(timeIntervalSince1970: 0))
+        let service = Live{{ name }}Service(clock: { now.value }, timeToLive: 1)
+        let payload = Data()
+
+        try await service.store({{ name }}Response(identifier: "id", payload: payload))
+
+        now.set(Date(timeIntervalSince1970: 5))
+
+        await XCTAssertThrowsErrorAsync(try await service.fetch({{ name }}Request(identifier: "id"))) { error in
+            guard
+                let serviceError = error as? {{ name }}ServiceError,
+                case let .notFound(identifier) = serviceError
+            else {
+                XCTFail("Expected notFound error but received \(String(reflecting: error))")
+                return
+            }
+            XCTAssertEqual(identifier, "id")
+        }
+    }
+
+    func test_clearCacheRemovesStoredResponse() async throws {
+        let service = Live{{ name }}Service(timeToLive: 60)
+        let response = {{ name }}Response(identifier: "id", payload: Data("payload".utf8))
+
+        try await service.store(response)
+        try await service.clearCache()
+
+        await XCTAssertThrowsErrorAsync(try await service.fetch({{ name }}Request(identifier: "id"))) { error in
+            guard
+                let serviceError = error as? {{ name }}ServiceError,
+                case let .notFound(identifier) = serviceError
+            else {
+                XCTFail("Expected notFound after clearCache but received \(String(reflecting: error))")
+                return
+            }
+            XCTAssertEqual(identifier, "id")
+        }
+    }
+}
+
+private final class LockedValue<Value>: @unchecked Sendable {
+    private let lock = NSLock()
+    private var storage: Value
+
+    init(_ value: Value) {
+        self.storage = value
+    }
+
+    var value: Value {
+        lock.lock()
+        defer { lock.unlock() }
+        return storage
+    }
+
+    func set(_ value: Value) {
+        lock.lock()
+        storage = value
+        lock.unlock()
+    }
+}
+
+private func XCTAssertThrowsErrorAsync<T>(_ expression: @autoclosure () async throws -> T, _ message: @autoclosure () -> String = "", file: StaticString = #filePath, line: UInt = #line, _ errorHandler: (Error) -> Void) async {
+    do {
+        _ = try await expression()
+        XCTFail(message(), file: file, line: line)
+    } catch {
+        errorHandler(error)
+    }
+}
