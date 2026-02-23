@@ -11,16 +11,6 @@ public struct {{ name }}FeatureView: View {
 
     public var body: some View {
         VStack {
-            // TODO: Build your UI
-            // Example:
-            // if store.isLoading {
-            //     ProgressView()
-            // } else {
-            //     List(store.items) { item in
-            //         Text(item.name)
-            //     }
-            // }
-
             Text("{{ name }} Feature")
                 .font(.title)
 
@@ -29,7 +19,7 @@ public struct {{ name }}FeatureView: View {
             }
         }
         .task {
-            await store.send(.view(.onAppear))
+            store.send(.view(.onAppear))
         }
     }
 }

@@ -7,7 +7,7 @@ private let sharedTeamAttribute: Template.Attribute = .optional("teamId", defaul
 private let sharedDeploymentTargetAttribute: Template.Attribute = .optional("deploymentTarget", default: "17.0")
 
 let templateShared = Template(
-    description: "TMA Shared module (1-target with internal Interface structure)",
+    description: "TMA Shared module (single target, compile-safe minimal scaffold)",
     attributes: [
         sharedNameAttribute,
         sharedOrganizationAttribute,
@@ -17,14 +17,8 @@ let templateShared = Template(
     ],
     items: [
         .file(path: "Projects/Shared/{{ name }}/Project.swift", templatePath: "Project.stencil"),
-
-        // Interface (Internal Organization)
-        .file(path: "Projects/Shared/{{ name }}/Sources/Interface/{{ name }}Interface.swift", templatePath: "SharedInterface.stencil"),
-
-        // InterfaceKeys (Internal Organization)
-        .file(path: "Projects/Shared/{{ name }}/Sources/InterfaceKeys/{{ name }}InterfaceKeys.swift", templatePath: "SharedInterfaceKeys.stencil"),
-
-        // Sources - Main file
-        .file(path: "Projects/Shared/{{ name }}/Sources/{{ name }}.swift", templatePath: "SharedSources.stencil")
+        .file(path: "Projects/Shared/{{ name }}/Sources/{{ name }}.swift", templatePath: "SharedSources.stencil"),
+        .file(path: "Projects/Shared/{{ name }}/Sources/{{ name }}Keys.swift", templatePath: "SharedKeys.stencil"),
+        .file(path: "Projects/Shared/{{ name }}/Sources/{{ name }}AnySendableError.swift", templatePath: "SharedAnySendableError.stencil")
     ]
 )

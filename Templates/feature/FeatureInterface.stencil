@@ -4,9 +4,6 @@ import Dependencies
 // MARK: - Feature Builder Protocol
 
 /// Entry point contract for the {{ name }} feature.
-///
-/// Features expose builders so that the App layer can compose concrete implementations
-/// without forcing higher layers to depend on Implementation details.
 public protocol {{ name }}FeatureBuildable: Sendable {
     /// Builds the feature view hierarchy.
     @MainActor
@@ -14,12 +11,13 @@ public protocol {{ name }}FeatureBuildable: Sendable {
 }
 
 public extension {{ name }}FeatureBuildable {
+    @MainActor
     func eraseToAnyView() -> AnyView { build() }
 }
 
-// MARK: - TestDependencyKey Conformance
+// MARK: - Dependency Key
 
-extension {{ name }}FeatureBuildable: TestDependencyKey {
+public enum {{ name }}FeatureBuilderKey: TestDependencyKey {
     public static var testValue: any {{ name }}FeatureBuildable {
         Stub{{ name }}FeatureBuilder()
     }
@@ -31,19 +29,16 @@ extension {{ name }}FeatureBuildable: TestDependencyKey {
     #endif
 }
 
-// MARK: - DependencyValues Extension
-
 public extension DependencyValues {
     var {{ name | lowerFirstWord }}FeatureBuilder: any {{ name }}FeatureBuildable {
-        get { self[{{ name }}FeatureBuildable.self] }
-        set { self[{{ name }}FeatureBuildable.self] = newValue }
+        get { self[{{ name }}FeatureBuilderKey.self] }
+        set { self[{{ name }}FeatureBuilderKey.self] = newValue }
     }
 }
 
 // MARK: - Test Helpers
 
-/// Stub builder for testing and previews
-private struct Stub{{ name }}FeatureBuilder: {{ name }}FeatureBuildable, @unchecked Sendable {
+private struct Stub{{ name }}FeatureBuilder: {{ name }}FeatureBuildable, Sendable {
     @MainActor
     func build() -> AnyView {
         AnyView(

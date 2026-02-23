@@ -1,0 +1,14 @@
+import Foundation
+
+/// Wraps non-Sendable errors as plain text for cross-actor hops.
+public struct {{ name }}AnySendableError: Error, Sendable, LocalizedError {
+    public let localizedDescription: String
+
+    public init(_ error: Error) {
+        self.localizedDescription = error.localizedDescription
+    }
+
+    public var errorDescription: String? {
+        localizedDescription
+    }
+}
